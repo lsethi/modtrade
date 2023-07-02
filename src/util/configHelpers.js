@@ -572,8 +572,13 @@ const mergeListingConfig = (hostedConfig, defaultConfigs) => {
         }
       : null;
 
-  const { listingTypes = [], listingFields = [], ...rest } =
-    hostedListingConfig || defaultConfigs.listing;
+  //const { listingTypes = [], listingFields = [], ...rest } =
+  //  hostedListingConfig || defaultConfigs.listing;
+  const { listingFields = [], ...rest } =  defaultConfigs.listing || hostedListingConfig;
+  const listingTypes = [
+    ...hostedListingConfig.listingTypes,
+    ...defaultConfigs.listing.listingTypes,
+  ];
   const listingTypesInUse = getListingTypeStringsInUse(listingTypes);
 
   return {

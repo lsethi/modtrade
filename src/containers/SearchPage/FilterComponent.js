@@ -7,10 +7,26 @@ import SelectMultipleFilter from './SelectMultipleFilter/SelectMultipleFilter';
 import BookingDateRangeFilter from './BookingDateRangeFilter/BookingDateRangeFilter';
 import KeywordFilter from './KeywordFilter/KeywordFilter';
 import PriceFilter from './PriceFilter/PriceFilter';
-
+import {parse } from '../../util/urlHelpers';
+import { useHistory } from 'react-router-dom';
 // Helper: get enumOptions in a format that works as query parameter
-const createFilterOptions = options => options.map(o => ({ key: `${o.option}`, label: o.label }));
-
+//const createFilterOptions = options => options.map(o => ({ key: `${o.option}`, label: o.label }));
+function createFilterOptions(options,key='') {
+  if(key=='subcategory'){
+    const params = useHistory();
+    const parseParam = parse(params.location.search);
+    if(parseParam.pub_category){
+      const newOptions = options.filter(item => item.parent === parseParam.pub_category);
+      return newOptions.map(o => ({ key: `${o.option}`, label: o.label }));
+    }
+    else{
+      return options.map(o => ({ key: `${o.option}`, label: o.label }));
+    }
+  }
+  else{
+    return options.map(o => ({ key: `${o.option}`, label: o.label }));
+  }
+}
 /**
  * FilterComponent is used to map configured filter types
  * to actual filter components
@@ -109,7 +125,7 @@ const FilterComponent = props => {
           queryParamNames={queryParamNames}
           initialValues={initialValues(queryParamNames, liveEdit)}
           onSubmit={getHandleChangedValueFn(useHistoryPush)}
-          options={createFilterOptions(enumOptions)}
+          options={createFilterOptions(enumOptions,key)}
           schemaType={schemaType}
           {...rest}
         />

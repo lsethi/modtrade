@@ -4,6 +4,7 @@ import { compose } from 'redux';
 import { Field, Form as FinalForm } from 'react-final-form';
 import arrayMutators from 'final-form-arrays';
 import classNames from 'classnames';
+import $ from 'jquery';
 
 // Import util modules
 import { intlShape, injectIntl, FormattedMessage } from '../../../../util/reactIntl';
@@ -189,7 +190,20 @@ const EditListingDetailsFormComponent = props => (
       const submitReady = (updated && pristine) || ready;
       const submitInProgress = updateInProgress;
       const submitDisabled = invalid || disabled || submitInProgress;
-
+      const newListingFieldsConfig = listingFieldsConfig.filter(obj => obj.key !== "listingType");
+      $('#category').on('change', function() {
+        const selectedValue = $(this).val();
+        const listField = listingFieldsConfig.find((field) => field.key === 'subcategory')?.enumOptions
+        const newOptions = listField.filter(item => item.parent === selectedValue);
+        console.log(newOptions);
+        var $el = $("#subcategory");
+        $el.empty(); // remove old options
+        $.each(newOptions, function(index,obj) {
+          console.log(obj);
+          $el.append($("<option></option>")
+            .attr("value", obj.option).text(obj.label));
+        });
+      });
       return (
         <Form className={classes} onSubmit={handleSubmit}>
           <ErrorMessage fetchErrors={fetchErrors} />
@@ -233,7 +247,7 @@ const EditListingDetailsFormComponent = props => (
 
           <AddListingFields
             listingType={listingType}
-            listingFieldsConfig={listingFieldsConfig}
+            listingFieldsConfig={newListingFieldsConfig}
             intl={intl}
           />
 
